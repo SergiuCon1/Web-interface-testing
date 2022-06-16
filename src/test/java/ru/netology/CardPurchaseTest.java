@@ -44,7 +44,7 @@ public class CardPurchaseTest {
         driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+79245632145");
         driver.findElement(By.className("checkbox__box")).click();
         driver.findElement(By.className("button")).click();
-        String text = driver.findElement(By.className("paragraph")).getText();
+        String text = driver.findElement(By.cssSelector("[data-test-id=\"order-success\"]")).getText();
         assertEquals("  Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.", text);
     }
 
