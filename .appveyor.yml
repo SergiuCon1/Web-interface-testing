@@ -4,7 +4,7 @@ stack: jdk 11  # версия JDK
 
 branches:
   only:
-    - master  # ветка git
+    - fix1  # ветка исправления git
 
 build: off  # будем использовать свой скрипт сборки
 

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
@@ -30,6 +29,7 @@ public class CardPurchaseTest {
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");
         driver = new ChromeDriver(options);
+        driver.get("http://localhost:9999");
     }
 
     @AfterEach
@@ -40,10 +40,8 @@ public class CardPurchaseTest {
 
     @Test
     void shouldGetSuccessMessage() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей");
-        fieldElements.get(1).sendKeys("+79245632145");
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич-Иванов Сергей");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+79245632145");
         driver.findElement(By.className("checkbox__box")).click();
         driver.findElement(By.className("button")).click();
         String text = driver.findElement(By.className("paragraph")).getText();
@@ -52,125 +50,108 @@ public class CardPurchaseTest {
 
     @Test
     void shouldGetValidationMessageWhenFioIsEmpty() {
-        driver.get("http://localhost:9999");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+79245632145");
+        driver.findElement(By.className("checkbox__box")).click();
         driver.findElement(By.className("button")).click();
-        List<WebElement> fieldElements = driver.findElements(By.className("input__sub"));
-        String text = fieldElements.get(0).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Поле обязательно для заполнения", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenPhoneIsEmpty() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей");
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич-Иванов Сергей");
+        driver.findElement(By.className("checkbox__box")).click();
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(1).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Поле обязательно для заполнения", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenCheckboxDisabled() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей");
-        fieldElements.get(1).sendKeys("+79245632145");
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич-Иванов Сергей");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+79245632145");
         driver.findElement(By.className("button")).click();
-        String color = driver.findElement(By.className("input_invalid")).getCssValue("color");
-        assertEquals("rgba(255, 92, 92, 1)", color);
+        String text = driver.findElement(By.cssSelector(".input_invalid .checkbox__text")).getText();
+        assertEquals("Я соглашаюсь с условиями обработки и использования моих персональных данных и разрешаю сделать запрос в бюро кредитных историй", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenFioWithNumbers() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей123");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+79245632145");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич Сергей123");
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(0).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenFioWithSymbols() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей@#@$");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+79245632145");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич Сергей@#@$");
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(0).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenFioWithLatin() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Contevici Sergiu");
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+79245632145");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Contevici Sergiu");
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(0).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenPhoneWithoutPlus() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей");
-        fieldElements.get(1).sendKeys("79245632145");
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич-Иванов Сергей");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("79245632145");
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(1).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenPhoneWhenLessThan11() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей");
-        fieldElements.get(1).sendKeys("+7924563214");
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич-Иванов Сергей");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+7924563214");
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(1).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenPhoneWhenMoreThan11() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей");
-        fieldElements.get(1).sendKeys("+792456321456");
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич-Иванов Сергей");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("+792456321456");
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(1).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenPhoneWhenAnotherSymbol() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей");
-        fieldElements.get(1).sendKeys("*79245632145");
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич-Иванов Сергей");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("*79245632145");
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(1).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", text);
     }
 
     @Test
     void shouldGetValidationMessageWhenPhoneWhenPlusInTheEnd() {
-        driver.get("http://localhost:9999");
-        List<WebElement> fieldElements = driver.findElements(By.className("input__control"));
-        fieldElements.get(0).sendKeys("Концевич Сергей");
-        fieldElements.get(1).sendKeys("79245632145+");
+        driver.findElement(By.cssSelector("[data-test-id=\"name\"] input")).sendKeys("Концевич-Иванов Сергей");
+        driver.findElement(By.className("checkbox__box")).click();
+        driver.findElement(By.cssSelector("[data-test-id=\"phone\"] input")).sendKeys("79245632145+");
         driver.findElement(By.className("button")).click();
-        List<WebElement> valMessagesElements = driver.findElements(By.className("input__sub"));
-        String text = valMessagesElements.get(1).getText();
+        String text = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", text);
     }
 }
